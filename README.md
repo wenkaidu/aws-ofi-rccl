@@ -63,10 +63,13 @@ The plugin uses GNU autotools for its build system. You can build it as follows:
 
 ```
 $ ./autogen.sh
-$ CC=cc ./configure --with-libfabric=/opt/cray/libfabric/1.15.0.0 --with-hip=/opt/rocm-5.2.0
+$ CC=cc ./configure --with-libfabric=/opt/cray/libfabric/1.15.0.0 --with-hip=/opt/rocm-5.2.0 --with-rccl=path-to-rccl-build-folder
 $ make
 $ sudo make install
 ```
+
+"--with-rccl=path-to-rccl-build-folder": Let's suppose we build RCCL at /home/username/rccl/build,
+then "--with-rccl=/home/username/rccl/build".
 
 If you want to install the plugin in a custom path, use the `--prefix`
 configure flag to provide the path. You can also point the build to custom
