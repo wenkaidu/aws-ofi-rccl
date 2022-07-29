@@ -204,6 +204,8 @@ typedef struct nccl_ofi_req {
 
 	/* Direction of request */
 	nccl_ofi_req_direction_t direction;
+
+	struct timeval tv;
 } nccl_ofi_req_t;
 
 typedef struct pending_req {

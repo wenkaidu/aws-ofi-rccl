@@ -14,6 +14,7 @@
 #include <sys/mman.h>
 #include <stack.h>
 #include <nccl_ofi_param.h>
+#include <sys/time.h>
 
 static uint32_t libversion = 0;
 /* NICs info list for a provider */
@@ -177,6 +178,7 @@ static inline nccl_ofi_req_t *allocate_nccl_ofi_request(free_list_t *fl)
 
 	req = &((nccl_ofi_req_t *)fl->buffers)[next_avail_index];
 	req->buffer_index = next_avail_index;
+    gettimeofday(&req->tv, NULL);
 
 exit:
 	return req;
@@ -2718,6 +2720,18 @@ static ncclResult_t ofi_test(void* request, int* done, int* size)
 
 	nccl_ofi_req_t *req = (nccl_ofi_req_t *)request;
 	nccl_ofi_t *nccl_ofi_comp = NULL;
+
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    float delta = (tv.tv_sec - req->tv.tv_sec)*1E6 + tv.tv_usec - req->tv.tv_usec;
+    static float prev_delta = 0;
+    if (delta - prev_delta > 1E6) {
+		NCCL_OFI_WARN("Request %p %s timeout after %f us",
+			req,
+			nccl_ofi_request_str(req),
+			delta);
+		prev_delta = delta;
+    }
 
 	/* Progress NCCL OFI in order to process completions */
 	nccl_ofi_comp = nccl_ofi_component[req->dev];
