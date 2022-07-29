@@ -63,10 +63,13 @@ The plugin uses GNU autotools for its build system. You can build it as follows:
 
 ```
 $ ./autogen.sh
-$ CC=cc ./configure --with-libfabric=/opt/cray/libfabric/1.15.0.0 --with-hip=/opt/rocm-5.2.0
+$ CC=cc ./configure --with-libfabric=/opt/cray/libfabric/1.15.0.0 --with-hip=/opt/rocm-5.2.0 --with-rccl=path-to-rccl-build-folder
 $ make
 $ sudo make install
 ```
+
+"--with-rccl=path-to-rccl-build-folder": Let's suppose we build RCCL at /home/username/rccl/build,
+then "--with-rccl=/home/username/rccl/build".
 
 If you want to install the plugin in a custom path, use the `--prefix`
 configure flag to provide the path. You can also point the build to custom
@@ -84,6 +87,13 @@ following config option:
 
 ```
    --enable-trace         Enable printing trace messages
+```
+
+By default, tests are built.  To disable building tests, use the following
+config option:
+
+```
+   --disable-tests        Disable build of tests.
 ```
 
 ### Plugin Configurations
@@ -114,6 +124,17 @@ The plugin allows to configure the following variables at run-time according to 
       <td>Disable flush operation when using GPUDirect.</td>
       <td>Boolean</td>
       <td>0/1 (Default: 1)</td>
+   </tr>
+   <tr>
+      <td><code>OFI_NCCL_CUDA_FLUSH_ENABLE</code></td>
+      <td>When using GPUDirect use the cudaDeviceFlushGPUDirectRDMAWrites to
+      enforce data consistency at the receiving GPU. Requires CUDA 11.3 or
+      later. Note that this function only provides a GPU memory fence and
+      requires that data has already been delivered to GPU memory. Some
+      networks and PCIe configurations require an additional network-level
+      flush that is not provided by this option.</td>
+      <td>Boolean</td>
+      <td>0/1 (Default: 0)</td>
    </tr>
 </table>
 
